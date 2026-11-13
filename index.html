@@ -1,0 +1,1034 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Data Surfers: Misión Limpieza 400</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+  <style>
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    body {
+      margin: 0;
+      background: #070B18;
+      color: #F8FAFC;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      overflow: hidden;
+      user-select: none;
+    }
+    .btn-3d {
+      transition: transform 0.08s ease, box-shadow 0.08s ease;
+    }
+    .btn-3d:active {
+      transform: translateY(3px);
+    }
+    .btn-green {
+      background: linear-gradient(180deg, #22C55E 0%, #16A34A 100%);
+      box-shadow: 0 4px 0 #15803D;
+    }
+    .btn-green:active { box-shadow: 0 1px 0 #15803D; }
+    .btn-cyan {
+      background: linear-gradient(180deg, #06B6D4 0%, #0284C7 100%);
+      box-shadow: 0 4px 0 #0369A1;
+    }
+    .btn-cyan:active { box-shadow: 0 1px 0 #0369A1; }
+    .btn-amber {
+      background: linear-gradient(180deg, #FBBF24 0%, #D97706 100%);
+      box-shadow: 0 4px 0 #B45309;
+    }
+    .btn-amber:active { box-shadow: 0 1px 0 #B45309; }
+    canvas { touch-action: none; }
+  </style>
+</head>
+<body class="h-full w-full flex flex-col justify-between bg-[#070B18]">
+
+  <!-- ==================== HEADER ==================== -->
+  <header class="w-full bg-[#0F172A]/95 border-b border-cyan-500/30 px-3 py-2 flex items-center justify-between z-30 shrink-0">
+    <div class="flex items-center gap-2 cursor-pointer" id="btn-home">
+      <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-cyan-400 via-blue-500 to-purple-600 flex items-center justify-center text-xl shadow-lg shadow-cyan-500/30">
+        🛹
+      </div>
+      <div>
+        <div class="flex items-center gap-1.5">
+          <span class="text-xs sm:text-sm font-black tracking-wider bg-gradient-to-r from-cyan-300 via-yellow-300 to-emerald-300 bg-clip-text text-transparent uppercase">DATA SURFERS</span>
+          <span class="text-[9px] font-black bg-amber-400 text-slate-950 px-1.5 py-0.5 rounded-full">400 NIVELES</span>
+        </div>
+        <div id="hdr-world" class="text-[10px] font-bold text-slate-400">Mundo 1 · Túneles del Outlier</div>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-2">
+      <div class="bg-slate-900 border border-amber-500/40 px-2.5 py-1 rounded-full text-xs font-black text-amber-300 flex items-center gap-1">
+        <span>🏆</span>
+        <span id="hdr-score">0</span>
+      </div>
+      <div class="bg-slate-900 border border-emerald-500/40 px-2.5 py-1 rounded-full text-xs font-black text-emerald-300 hidden sm:flex items-center gap-1">
+        <span>✅</span>
+        <span id="hdr-unlocked">Nv. 1/400</span>
+      </div>
+      <button id="btn-sound" class="w-8 h-8 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 flex items-center justify-center text-sm" title="Sonido">🔊</button>
+    </div>
+  </header>
+
+  <!-- ==================== PANTALLA 1: LOBBY / SELECTOR DE 400 NIVELES ==================== -->
+  <section id="screen-lobby" class="flex-1 w-full max-w-2xl mx-auto p-3 sm:p-5 flex flex-col justify-between overflow-y-auto">
+    
+    <!-- Banner principal estilo Subway Surfers -->
+    <div class="bg-gradient-to-br from-indigo-950 via-[#151E3F] to-cyan-950 border-2 border-cyan-400/40 rounded-3xl p-4 sm:p-5 shadow-2xl relative overflow-hidden mb-3">
+      <div class="flex items-center justify-between gap-3">
+        <div>
+          <span class="inline-block text-[10px] font-black uppercase tracking-widest bg-cyan-500/20 text-cyan-300 border border-cyan-400/40 px-2.5 py-0.5 rounded-full mb-1.5">
+            Inspirado en Subway Surfers · 1º Secundaria
+          </span>
+          <h1 class="text-xl sm:text-2xl font-black text-white leading-tight">
+            ¡Surfea los Carriles y Limpia los Datos!
+          </h1>
+          <p class="text-xs sm:text-sm text-slate-300 mt-1 leading-snug">
+            Atrapa <span class="text-emerald-400 font-bold">Datos Limpios ✅</span> para entrenar tu IA y esquiva o salta los <span class="text-rose-400 font-bold">Monstruos Sucios 👾</span> (outliers, fantasmas NaN, clones y typos).
+          </p>
+        </div>
+        <div class="hidden sm:flex w-20 h-20 rounded-2xl bg-gradient-to-tr from-amber-400 to-rose-500 items-center justify-center text-4xl shrink-0 shadow-xl">
+          ⚡
+        </div>
+      </div>
+
+      <!-- Mini guía visual de controles -->
+      <div class="grid grid-cols-3 gap-2 mt-3 pt-3 border-t border-white/10 text-center text-[11px] font-bold">
+        <div class="bg-slate-900/70 rounded-xl p-2 border border-slate-700/70">
+          <span class="text-cyan-300 block font-black">⬅️ ➡️ / Swipe</span>
+          <span class="text-slate-300">Cambiar de carril</span>
+        </div>
+        <div class="bg-slate-900/70 rounded-xl p-2 border border-slate-700/70">
+          <span class="text-amber-300 block font-black">⬆️ / Espacio</span>
+          <span class="text-slate-300">Saltar errores</span>
+        </div>
+        <div class="bg-slate-900/70 rounded-xl p-2 border border-slate-700/70">
+          <span class="text-emerald-300 block font-black">400 Niveles</span>
+          <span class="text-slate-300">Todos distintos</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Selector de Mundos (5 Mundos x 80 Niveles) -->
+    <div class="bg-[#111827]/90 border border-slate-800 rounded-2xl p-3 mb-3">
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-xs font-black uppercase tracking-wider text-slate-300">🌍 Elige tu Mundo (400 Niveles Únicos)</span>
+        <div class="flex items-center gap-1">
+          <input id="jump-input" type="number" min="1" max="400" placeholder="1-400" class="w-16 bg-slate-800 border border-cyan-500/40 rounded-lg px-2 py-1 text-xs font-black text-center text-white focus:outline-none">
+          <button id="btn-jump" class="btn-3d btn-amber text-slate-950 font-black text-xs px-2.5 py-1 rounded-lg">Ir</button>
+        </div>
+      </div>
+
+      <div id="worlds-tabs" class="grid grid-cols-5 gap-1.5 mb-3">
+        <!-- Generado dinámicamente -->
+      </div>
+
+      <div id="world-info-box" class="bg-slate-900/90 border border-slate-700/80 rounded-xl p-2.5 mb-2.5 flex items-center justify-between">
+        <div>
+          <div id="w-title" class="text-xs sm:text-sm font-black text-cyan-300">Mundo 1: Túneles del Outlier</div>
+          <div id="w-desc" class="text-[11px] text-slate-400">Edades imposibles, notas locas y valores extremos.</div>
+        </div>
+        <span id="w-range" class="text-[10px] font-black bg-slate-800 text-slate-200 px-2 py-1 rounded-lg border border-slate-700 shrink-0">Nv. 1-80</span>
+      </div>
+
+      <!-- Cuadrícula rápida de niveles del mundo seleccionado -->
+      <div id="levels-grid" class="grid grid-cols-8 sm:grid-cols-10 gap-1.5 max-h-36 overflow-y-auto pr-1">
+        <!-- Generado dinámicamente -->
+      </div>
+    </div>
+
+    <!-- Botón Principal de Jugar -->
+    <button id="btn-play-current" class="btn-3d btn-green w-full py-3.5 rounded-2xl font-black text-base uppercase tracking-wider text-white shadow-xl flex items-center justify-center gap-2 shrink-0">
+      <span>🛹 CORRER NIVEL <span id="lbl-current-lvl">1</span></span>
+    </button>
+  </section>
+
+  <!-- ==================== PANTALLA 2: ARENA SUBWAY SURFERS (CANVAS) ==================== -->
+  <section id="screen-game" class="hidden flex-1 w-full flex flex-col items-center justify-between relative overflow-hidden">
+    
+    <!-- HUD Superior del Nivel -->
+    <div class="w-full max-w-xl px-3 pt-2 z-20 shrink-0">
+      <div class="bg-[#0F172A]/90 backdrop-blur border border-cyan-500/40 rounded-2xl p-2.5 shadow-lg">
+        <div class="flex items-center justify-between text-xs mb-1.5">
+          <div class="flex items-center gap-2">
+            <button id="btn-back-lobby" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-0.5 rounded-lg font-bold text-[11px] border border-slate-700">◀ Mapa</button>
+            <span id="hud-level-badge" class="font-black text-cyan-300 uppercase">NIVEL 1</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span id="hud-hearts" class="text-sm tracking-widest">❤️❤️❤️</span>
+            <span id="hud-goal" class="bg-emerald-500/20 border border-emerald-400/50 text-emerald-300 font-black px-2 py-0.5 rounded-full text-[11px]">0 / 5 Limpios</span>
+          </div>
+        </div>
+        <!-- Regla del Nivel (Gigante y Clara) -->
+        <div id="hud-rule-banner" class="bg-gradient-to-r from-blue-950 via-indigo-950 to-purple-950 border border-indigo-400/40 rounded-xl px-3 py-1.5 text-center">
+          <div id="hud-rule-title" class="text-xs sm:text-sm font-black text-amber-300">REGLA: Atrapa EDADES de 11 a 14 años</div>
+          <div id="hud-rule-sub" class="text-[10px] text-slate-300">Esquiva edades imposibles como 250 o -3</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Canvas del Runner 3D -->
+    <div class="flex-1 w-full flex items-center justify-center relative overflow-hidden">
+      <canvas id="game-canvas" class="w-full h-full max-w-xl block"></canvas>
+
+      <!-- Toast de Feedback instantáneo en carrera -->
+      <div id="run-toast" class="pointer-events-none absolute top-4 left-1/2 -translate-x-1/2 px-4 py-1.5 rounded-full font-black text-xs shadow-2xl opacity-0 transition-opacity duration-200 whitespace-nowrap z-30">
+        +1 Dato Limpio
+      </div>
+    </div>
+
+    <!-- Controles Táctiles Grandes (para móvil, tablet o clic) -->
+    <div class="w-full max-w-xl px-3 pb-2.5 pt-1 grid grid-cols-3 gap-2 z-20 shrink-0">
+      <button id="ctrl-left" class="btn-3d btn-cyan py-2.5 rounded-xl font-black text-white text-sm flex items-center justify-center gap-1">⬅️ Izq</button>
+      <button id="ctrl-jump" class="btn-3d btn-amber py-2.5 rounded-xl font-black text-slate-950 text-sm flex items-center justify-center gap-1">⬆️ Saltar</button>
+      <button id="ctrl-right" class="btn-3d btn-cyan py-2.5 rounded-xl font-black text-white text-sm flex items-center justify-center gap-1">Der ➡️</button>
+    </div>
+  </section>
+
+  <!-- ==================== MODAL RESULTADO DE NIVEL ==================== -->
+  <div id="modal-result" class="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+    <div class="w-full max-w-sm bg-[#131C36] border-2 border-cyan-400/50 rounded-3xl p-5 text-center shadow-2xl">
+      <div id="res-emoji" class="text-5xl mb-2">🎉</div>
+      <h2 id="res-title" class="text-xl font-black text-white mb-1">¡Nivel Completado!</h2>
+      <p id="res-msg" class="text-xs text-slate-300 mb-4 leading-snug">Dataset limpio y listo para entrenar la IA.</p>
+
+      <div class="grid grid-cols-2 gap-2 mb-4">
+        <div class="bg-slate-900/90 border border-emerald-500/30 rounded-xl p-2.5">
+          <span class="text-[10px] font-bold text-emerald-400 uppercase block">Datos Limpios</span>
+          <span id="res-clean" class="text-lg font-black text-white">5</span>
+        </div>
+        <div class="bg-slate-900/90 border border-rose-500/30 rounded-xl p-2.5">
+          <span class="text-[10px] font-bold text-rose-400 uppercase block">Errores Evitados</span>
+          <span id="res-dodged" class="text-lg font-black text-white">8</span>
+        </div>
+      </div>
+
+      <div id="res-lesson" class="bg-indigo-950/70 border border-indigo-400/30 rounded-xl p-3 text-left text-xs text-indigo-100 mb-4">
+        <span class="font-black text-amber-300 block mb-0.5">💡 Tip de Detective:</span>
+        <span id="res-lesson-text">Garbage In, Garbage Out: si limpias las edades antes de calcular el promedio, tu resultado será real.</span>
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <button id="btn-res-primary" class="btn-3d btn-green w-full py-3 rounded-xl font-black text-sm text-white uppercase">Siguiente Nivel ➔</button>
+        <button id="btn-res-map" class="w-full py-2 text-xs font-bold text-slate-400 hover:text-white">Volver al Mapa</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* ============================================================
+       1. AUDIO SINTETIZADO (Web Audio API)
+       ============================================================ */
+    let audioCtx = null;
+    let soundOn = true;
+
+    function playSfx(type) {
+      if (!soundOn) return;
+      try {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const now = audioCtx.currentTime;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        if (type === 'coin') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(660, now);
+          osc.frequency.setValueAtTime(990, now + 0.06);
+          gain.gain.setValueAtTime(0.14, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
+          osc.start(now); osc.stop(now + 0.2);
+        } else if (type === 'jump') {
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(280, now);
+          osc.frequency.exponentialRampToValueAtTime(560, now + 0.14);
+          gain.gain.setValueAtTime(0.12, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+          osc.start(now); osc.stop(now + 0.15);
+        } else if (type === 'hit') {
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(160, now);
+          osc.frequency.linearRampToValueAtTime(85, now + 0.22);
+          gain.gain.setValueAtTime(0.18, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
+          osc.start(now); osc.stop(now + 0.22);
+        } else if (type === 'win') {
+          [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => {
+            const o = audioCtx.createOscillator();
+            const g = audioCtx.createGain();
+            o.type = 'triangle';
+            o.frequency.setValueAtTime(f, now + i * 0.07);
+            g.gain.setValueAtTime(0.13, now + i * 0.07);
+            g.gain.exponentialRampToValueAtTime(0.001, now + i * 0.07 + 0.25);
+            o.connect(g); g.connect(audioCtx.destination);
+            o.start(now + i * 0.07); o.stop(now + i * 0.07 + 0.25);
+          });
+        } else if (type === 'move') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(420, now);
+          gain.gain.setValueAtTime(0.05, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
+          osc.start(now); osc.stop(now + 0.04);
+        }
+      } catch (e) {}
+    }
+
+    /* ============================================================
+       2. ESTADO DEL JUGADOR (localStorage)
+       ============================================================ */
+    const SAVE_KEY = 'data_surfers_400_v1';
+    let state = {
+      unlockedLevel: 1,
+      currentLevel: 1,
+      selectedWorld: 1,
+      score: 0
+    };
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(SAVE_KEY);
+        if (raw) state = { ...state, ...JSON.parse(raw) };
+      } catch (e) {}
+    }
+    function saveState() {
+      try { localStorage.setItem(SAVE_KEY, JSON.stringify(state)); } catch (e) {}
+    }
+
+    /* ============================================================
+       3. GENERADOR DETERMINISTA DE 400 NIVELES ÚNICOS (SIN REPETICIÓN)
+       ============================================================ */
+    function mulberry32(seed) {
+      return function() {
+        let t = seed += 0x6D2B79F5;
+        t = Math.imul(t ^ (t >>> 15), t | 1);
+        t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+      };
+    }
+
+    const WORLDS = [
+      { id: 1, name: "Túneles del Outlier", desc: "Edades imposibles, notas locas y valores extremos.", range: "Nv. 1-80", trackBg: "#0B132B", railColor: "#06B6D4", accent: "#22D3EE" },
+      { id: 2, name: "Estación Fantasma (NaN)", desc: "Campos vacíos, null y datos invisibles que rompen todo.", range: "Nv. 81-160", trackBg: "#1A102E", railColor: "#A855F7", accent: "#C084FC" },
+      { id: 3, name: "Vías de los Clones", desc: "Registros duplicados e IDs repetidos en el comedor.", range: "Nv. 161-240", trackBg: "#1F1224", railColor: "#F43F5E", accent: "#FB7185" },
+      { id: 4, name: "Expreso Typo", desc: "Errores tipográficos, mayúsculas locas y fechas rotas.", range: "Nv. 241-320", trackBg: "#1E1B0E", railColor: "#F59E0B", accent: "#FBBF24" },
+      { id: 5, name: "Mega Pipeline 80/20", desc: "Desafío maestro: limpia los 4 monstruos y normaliza.", range: "Nv. 321-400", trackBg: "#071E1A", railColor: "#10B981", accent: "#34D399" }
+    ];
+
+    const NAMES_POOL = ["Sofía", "Mateo", "Valentina", "Lucas", "Camila", "Diego", "Lucía", "Sebastián", "Elena", "Tomás", "Abril", "Nicolás", "Martina", "Gabriel", "Isabella", "Andrés"];
+    const SUBJECTS_CLEAN = ["Matemáticas", "Ciencias", "Historia", "Lengua", "Inglés", "Robótica", "Arte", "Geografía", "Física", "Biología"];
+    const SUBJECTS_TYPO = ["Matematikas", "Zienzias", "Hiztoria", "Lenjua", "Inglez", "Robotika", "Aret", "Jeografia", "Fizica", "Biolojia"];
+    const CITIES_CLEAN = ["Caracas", "Madrid", "Bogotá", "Lima", "Quito", "Santiago", "México", "Panamá", "Valencia", "Mérida"];
+    const CITIES_TYPO = ["Caracazzz", "madriD", "Bogotaaaa", "L1ma", "Qito", "Santiag0", "Mexiko", "Pnamá", "Valensia", "Mer1da"];
+    const NAN_VALUES = ["NaN", "null", "???", "---", "[VACÍO]", "undefined", "N/A", "error_0"];
+
+    function generateUniqueLevel(levelNum) {
+      const worldIdx = Math.min(4, Math.floor((levelNum - 1) / 80));
+      const world = WORLDS[worldIdx];
+      const rng = mulberry32(levelNum * 2654435761 + 17);
+
+      // Meta y velocidad únicas según el nivel (1 a 400)
+      const goalClean = 5 + (levelNum % 4) + Math.floor(levelNum / 120); // 5 a 11 datos limpios
+      const baseSpeed = 0.52 + Math.min(0.45, levelNum * 0.0011); // Velocidad progresiva suave
+
+      // Seleccionar un dominio distinto por nivel usando worldIdx + variación determinista
+      const domainVariant = (levelNum + Math.floor(rng() * 7)) % 4;
+
+      let ruleTitle = "";
+      let ruleSub = "";
+      let lessonTip = "";
+      const cleanItems = [];
+      const dirtyItems = [];
+
+      if (worldIdx === 0) {
+        // MUNDO 1: OUTLIERS (Niveles 1-80) - 80 combinaciones distintas de rangos y dominios
+        const subType = levelNum % 4;
+        if (subType === 1) {
+          const minA = 11 + (levelNum % 2);
+          const maxA = minA + 3;
+          ruleTitle = `Nivel ${levelNum}: Atrapa EDADES de 1º Sec (${minA}-${maxA} años)`;
+          ruleSub = `¡Esquiva al Vampiro Outlier (ej. 250, -4, 999)!`;
+          lessonTip = `Un outlier como "Edad: 250" dispara el promedio de la clase. ¡Siempre pon límites de rango!`;
+          for (let i = 0; i < 12; i++) {
+            cleanItems.push(`Edad: ${minA + Math.floor(rng() * (maxA - minA + 1))}`);
+            const badAge = rng() > 0.5 ? (150 + Math.floor(rng() * 350) + levelNum) : (-1 * (1 + Math.floor(rng() * 20)));
+            dirtyItems.push(`Edad: ${badAge} 🧛`);
+          }
+        } else if (subType === 2) {
+          ruleTitle = `Nivel ${levelNum}: Atrapa NOTAS válidas (0 a 20 pts)`;
+          ruleSub = `¡Esquiva notas imposibles (ej. 950, -12)!`;
+          lessonTip = `Si una escala es de 0 a 20, cualquier nota fuera de ese rango es un error de registro.`;
+          for (let i = 0; i < 12; i++) {
+            cleanItems.push(`Nota: ${10 + Math.floor(rng() * 11)} pts`);
+            const badGrade = rng() > 0.5 ? (100 + Math.floor(rng() * 800) + levelNum) : (-5 - Math.floor(rng() * 40));
+            dirtyItems.push(`Nota: ${badGrade} 👾`);
+          }
+        } else if (subType === 3) {
+          ruleTitle = `Nivel ${levelNum}: Atrapa PRECIOS de Cantina ($1 - $15)`;
+          ruleSub = `¡Esquiva precios locos ($9999, -$5)!`;
+          lessonTip = `En datos financieros escolares, un cero de más ($500 por un jugo) arruina el presupuesto.`;
+          for (let i = 0; i < 12; i++) {
+            cleanItems.push(`Jugo: $${1 + Math.floor(rng() * 14)}`);
+            dirtyItems.push(`Jugo: $${500 + levelNum * 3 + Math.floor(rng() * 900)} 💸`);
+          }
+        } else {
+          ruleTitle = `Nivel ${levelNum}: Atrapa TEMPERATURA corporal (36°C - 37°C)`;
+          ruleSub = `¡Esquiva lecturas de volcán o polo norte!`;
+          lessonTip = `Los sensores dañados generan valores atípicos extremos (99°C o -50°C) que hay que filtrar.`;
+          for (let i = 0; i < 12; i++) {
+            cleanItems.push(`Temp: ${36 + Math.floor(rng() * 2)}.${Math.floor(rng() * 9)}°C`);
+            const badT = rng() > 0.5 ? (120 + levelNum + Math.floor(rng() * 200)) : (-40 - Math.floor(rng() * 50));
+            dirtyItems.push(`Temp: ${badT}°C 🔥`);
+          }
+        }
+      } else if (worldIdx === 1) {
+        // MUNDO 2: DATOS FALTANTES / NaN (Niveles 81-160)
+        const subType = levelNum % 3;
+        if (subType === 0) {
+          ruleTitle = `Nivel ${levelNum}: Atrapa NOMBRES completos`;
+          ruleSub = `¡Esquiva al Alumno Fantasma (NaN, null, ???)!`;
+          lessonTip = `Un campo vacío (NaN) rompe las fórmulas automáticas si no se rellena o elimina.`;
+          for (let i = 0; i < 12; i++) {
+            const nm = NAMES_POOL[(levelNum + i + Math.floor(rng() * 5)) % NAMES_POOL.length];
+            cleanItems.push(`Alumno: ${nm}`);
+            dirtyItems.push(`Alumno: ${NAN_VALUES[Math.floor(rng() * NAN_VALUES.length)]} 👻`);
+          }
+        } else if (subType === 1) {
+          ruleTitle = `Nivel ${levelNum}: Atrapa CORREOS válidos (@)`;
+          ruleSub = `¡Esquiva correos vacíos o sin arroba!`;
+          lessonTip = `Si falta el símbolo @ o el dominio, el sistema no puede enviar el boletín escolar.`;
+          for (let i = 0; i < 12; i++) {
+            const nm = NAMES_POOL[(levelNum + i) % NAMES_POOL.length].toLowerCase();
+            cleanItems.push(`${nm}${levelNum}@edu.ve`);
+            dirtyItems.push(rng() > 0.5 ? `${nm}_sin_arroba 👻` : `correo: ${NAN_VALUES[i % NAN_VALUES.length]}`);
+          }
+        } else {
+          ruleTitle = `Nivel ${levelNum}: Atrapa HORARIOS con hora exacta`;
+          ruleSub = `¡Esquiva casillas en blanco o "null"!`;
+          lessonTip = `Sin hora de entrada registrada, la tabla de asistencia queda incompleta.`;
+          for (let i = 0; i < 12; i++) {
+            const hr = 7 + Math.floor(rng() * 6);
+            const mn = (Math.floor(rng() * 4) * 15).toString().padStart(2, '0');
+            cleanItems.push(`Clase: 0${hr}:${mn}`.slice(-5));
+            dirtyItems.push(`Hora: ${NAN_VALUES[(levelNum + i) % NAN_VALUES.length]} 👻`);
+          }
+        }
+      } else if (worldIdx === 2) {
+        // MUNDO 3: DUPLICADOS / CLONES (Niveles 161-240)
+        ruleTitle = `Nivel ${levelNum}: Atrapa IDs ÚNICOS (#${100 + levelNum}..)`;
+        ruleSub = `¡Esquiva los registros CLONADOS (x2, x4)!`;
+        lessonTip = `El "Ataque de los Clones" hace creer a la escuela que hay el doble de estudiantes pidiendo almuerzo.`;
+        for (let i = 0; i < 12; i++) {
+          const uid = levelNum * 10 + i;
+          const nm = NAMES_POOL[(levelNum + i) % NAMES_POOL.length];
+          cleanItems.push(`ID #${uid} · ${nm}`);
+          dirtyItems.push(`CLON x${2 + (i % 3)} · ${nm} 👯`);
+        }
+      } else if (worldIdx === 3) {
+        // MUNDO 4: ERRORES TIPOGRÁFICOS Y FORMATO (Niveles 241-320)
+        const subType = levelNum % 2;
+        if (subType === 0) {
+          ruleTitle = `Nivel ${levelNum}: Atrapa MATERIAS bien escritas`;
+          ruleSub = `¡Esquiva los "Dedos de Salchicha" (typos)!`;
+          lessonTip = `Para una máquina, "Matemáticas" y "Matematikas" son dos cosas totalmente distintas.`;
+          for (let i = 0; i < 12; i++) {
+            const idx = (levelNum + i) % SUBJECTS_CLEAN.length;
+            cleanItems.push(SUBJECTS_CLEAN[idx]);
+            dirtyItems.push(`${SUBJECTS_TYPO[idx]} 🌭`);
+          }
+        } else {
+          ruleTitle = `Nivel ${levelNum}: Atrapa CIUDADES normalizadas`;
+          ruleSub = `¡Esquiva ciudades mal escritas o con números!`;
+          lessonTip = `Normalizar texto (quitar letras repetidas y ajustar mayúsculas) une datos dispersos.`;
+          for (let i = 0; i < 12; i++) {
+            const idx = (levelNum + i) % CITIES_CLEAN.length;
+            cleanItems.push(CITIES_CLEAN[idx]);
+            dirtyItems.push(`${CITIES_TYPO[idx]} 🌭`);
+          }
+        }
+      } else {
+        // MUNDO 5: MEGA PIPELINE 80/20 (Niveles 321-400) - Mezcla de todos los monstruos + Tipos de datos
+        ruleTitle = `Nivel ${levelNum}: MEGA PIPELINE (Solo Datos 100% Válidos)`;
+        ruleSub = `¡Esquiva Vampiros, Fantasmas, Clones y Typos!`;
+        lessonTip = `El 80% del trabajo en Data Science es limpiar estos 4 errores antes de entrenar cualquier IA.`;
+        for (let i = 0; i < 12; i++) {
+          const mode = (levelNum + i) % 4;
+          if (mode === 0) {
+            cleanItems.push(`Edad: ${11 + (i % 4)}`);
+            dirtyItems.push(`Edad: ${250 + levelNum % 99} 🧛`);
+          } else if (mode === 1) {
+            cleanItems.push(`Curso: 1º Sec`);
+            dirtyItems.push(`Curso: ${NAN_VALUES[i % NAN_VALUES.length]} 👻`);
+          } else if (mode === 2) {
+            cleanItems.push(`ID #${levelNum + i}`);
+            dirtyItems.push(`ID CLON x4 👯`);
+          } else {
+            cleanItems.push(SUBJECTS_CLEAN[i % SUBJECTS_CLEAN.length]);
+            dirtyItems.push(`${SUBJECTS_TYPO[i % SUBJECTS_TYPO.length]} 🌭`);
+          }
+        }
+      }
+
+      // Generar un patrón de oleadas único para este nivel (cada oleada tiene 3 carriles)
+      const waves = [];
+      for (let w = 0; w < 60; w++) {
+        const cleanLane = Math.floor(rng() * 3);
+        const row = [];
+        for (let lane = 0; lane < 3; lane++) {
+          if (lane === cleanLane) {
+            row.push({ kind: 'clean', text: cleanItems[Math.floor(rng() * cleanItems.length)] });
+          } else {
+            // En niveles bajos dejamos algún carril libre; en niveles altos más obstáculos
+            const obsChance = Math.min(0.88, 0.55 + levelNum * 0.0008);
+            if (rng() < obsChance) {
+              row.push({ kind: 'dirty', text: dirtyItems[Math.floor(rng() * dirtyItems.length)] });
+            } else {
+              row.push(null);
+            }
+          }
+        }
+        waves.push(row);
+      }
+
+      return {
+        level: levelNum,
+        world,
+        goalClean,
+        baseSpeed,
+        ruleTitle,
+        ruleSub,
+        lessonTip,
+        waves
+      };
+    }
+
+    /* ============================================================
+       4. MOTOR SUBWAY SURFERS 3D PERSPECTIVE EN CANVAS
+       ============================================================ */
+    const canvas = document.getElementById('game-canvas');
+    const ctx = canvas.getContext('2d');
+
+    let activeLevelData = null;
+    let animId = null;
+    let lastTime = 0;
+
+    // Estado de la carrera
+    let playerLane = 1; // 0 = Izq, 1 = Centro, 2 = Der
+    let visualLane = 1; // Interpolación suave
+    let jumpY = 0;
+    let jumpVel = 0;
+    let hearts = 3;
+    let cleanCount = 0;
+    let dodgedCount = 0;
+    let trackOffset = 0;
+    let entities = []; // { z: 0..1 (0=horizonte, 1=jugador), lane: 0..2, kind: 'clean'|'dirty', text: '', hit: false }
+    let waveIndex = 0;
+    let spawnTimer = 0;
+    let levelFinished = false;
+    let flashRed = 0;
+
+    function resizeCanvas() {
+      const rect = canvas.parentElement.getBoundingClientRect();
+      canvas.width = Math.max(320, Math.floor(rect.width));
+      canvas.height = Math.max(300, Math.floor(rect.height));
+    }
+    window.addEventListener('resize', resizeCanvas);
+
+    function startRunnerLevel(lvlNum) {
+      state.currentLevel = lvlNum;
+      activeLevelData = generateUniqueLevel(lvlNum);
+      saveState();
+
+      document.getElementById('screen-lobby').classList.add('hidden');
+      document.getElementById('screen-game').classList.remove('hidden');
+      document.getElementById('modal-result').classList.add('hidden');
+
+      resizeCanvas();
+
+      // Reiniciar variables de carrera
+      playerLane = 1;
+      visualLane = 1;
+      jumpY = 0;
+      jumpVel = 0;
+      hearts = 3;
+      cleanCount = 0;
+      dodgedCount = 0;
+      trackOffset = 0;
+      entities = [];
+      waveIndex = 0;
+      spawnTimer = 0.2;
+      levelFinished = false;
+      flashRed = 0;
+
+      updateGameHud();
+
+      if (animId) cancelAnimationFrame(animId);
+      lastTime = performance.now();
+      animId = requestAnimationFrame(gameLoop);
+    }
+
+    function updateGameHud() {
+      if (!activeLevelData) return;
+      document.getElementById('hud-level-badge').textContent = `NIVEL ${activeLevelData.level} / 400`;
+      document.getElementById('hud-hearts').textContent = '❤️'.repeat(hearts) + '🖤'.repeat(Math.max(0, 3 - hearts));
+      document.getElementById('hud-goal').textContent = `${cleanCount} / ${activeLevelData.goalClean} Limpios`;
+      document.getElementById('hud-rule-title').textContent = activeLevelData.ruleTitle;
+      document.getElementById('hud-rule-sub').textContent = activeLevelData.ruleSub;
+      document.getElementById('hdr-score').textContent = state.score;
+      document.getElementById('hdr-unlocked').textContent = `Nv. ${state.unlockedLevel}/400`;
+      document.getElementById('hdr-world').textContent = `Mundo ${activeLevelData.world.id} · ${activeLevelData.world.name}`;
+    }
+
+    function showRunToast(msg, isGood) {
+      const t = document.getElementById('run-toast');
+      t.textContent = msg;
+      t.className = `pointer-events-none absolute top-4 left-1/2 -translate-x-1/2 px-4 py-1.5 rounded-full font-black text-xs shadow-2xl transition-opacity duration-200 whitespace-nowrap z-30 opacity-100 ${isGood ? 'bg-emerald-500 text-slate-950' : 'bg-rose-600 text-white'}`;
+      clearTimeout(t._timer);
+      t._timer = setTimeout(() => {
+        t.classList.remove('opacity-100');
+        t.classList.add('opacity-0');
+      }, 900);
+    }
+
+    function moveLane(dir) {
+      if (levelFinished) return;
+      const next = Math.max(0, Math.min(2, playerLane + dir));
+      if (next !== playerLane) {
+        playerLane = next;
+        playSfx('move');
+      }
+    }
+
+    function triggerJump() {
+      if (levelFinished) return;
+      if (jumpY === 0) {
+        jumpVel = 540;
+        playSfx('jump');
+      }
+    }
+
+    // Controles de Teclado
+    window.addEventListener('keydown', (e) => {
+      if (document.getElementById('screen-game').classList.contains('hidden')) return;
+      if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') moveLane(-1);
+      else if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') moveLane(1);
+      else if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W' || e.key === ' ') {
+        e.preventDefault();
+        triggerJump();
+      }
+    });
+
+    // Controles Swipe en Canvas
+    let touchStartX = 0, touchStartY = 0;
+    canvas.addEventListener('touchstart', (e) => {
+      touchStartX = e.touches[0].clientX;
+      touchStartY = e.touches[0].clientY;
+    }, { passive: true });
+    canvas.addEventListener('touchend', (e) => {
+      const dx = e.changedTouches[0].clientX - touchStartX;
+      const dy = e.changedTouches[0].clientY - touchStartY;
+      if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 25) {
+        moveLane(dx > 0 ? 1 : -1);
+      } else if (dy < -30) {
+        triggerJump();
+      }
+    }, { passive: true });
+
+    // Proyección de perspectiva 3D (z: 0 = horizonte, 1 = primer plano)
+    function projectLaneX(lane, z, w) {
+      const horizonCenter = w / 2;
+      const laneOffset = lane - 1; // -1, 0, 1
+      const topSpread = w * 0.08;
+      const botSpread = w * 0.30;
+      const spread = topSpread + (botSpread - topSpread) * z;
+      return horizonCenter + laneOffset * spread;
+    }
+
+    function projectY(z, h) {
+      const horizonY = h * 0.14;
+      const bottomY = h * 0.94;
+      // Curva de perspectiva suave
+      const p = Math.pow(z, 1.35);
+      return horizonY + (bottomY - horizonY) * p;
+    }
+
+    function gameLoop(now) {
+      const dt = Math.min(0.05, (now - lastTime) / 1000);
+      lastTime = now;
+
+      if (!levelFinished) {
+        updatePhysics(dt);
+        drawScene();
+        animId = requestAnimationFrame(gameLoop);
+      }
+    }
+
+    function updatePhysics(dt) {
+      // Interpolar carril del jugador
+      visualLane += (playerLane - visualLane) * Math.min(1, dt * 16);
+
+      // Física de salto
+      if (jumpY > 0 || jumpVel > 0) {
+        jumpY += jumpVel * dt;
+        jumpVel -= 1650 * dt;
+        if (jumpY <= 0) {
+          jumpY = 0;
+          jumpVel = 0;
+        }
+      }
+
+      if (flashRed > 0) flashRed = Math.max(0, flashRed - dt * 3);
+
+      // Avance de la pista
+      const spd = activeLevelData.baseSpeed;
+      trackOffset = (trackOffset + spd * dt * 3) % 1;
+
+      // Generar nuevas oleadas
+      spawnTimer -= dt;
+      if (spawnTimer <= 0) {
+        const wave = activeLevelData.waves[waveIndex % activeLevelData.waves.length];
+        waveIndex++;
+        for (let l = 0; l < 3; l++) {
+          if (wave[l]) {
+            entities.push({
+              z: 0.02,
+              lane: l,
+              kind: wave[l].kind,
+              text: wave[l].text,
+              resolved: false
+            });
+          }
+        }
+        spawnTimer = Math.max(0.95, 1.45 - activeLevelData.level * 0.001);
+      }
+
+      // Mover entidades hacia el jugador
+      const playerZ = 0.86;
+      for (let i = entities.length - 1; i >= 0; i--) {
+        const ent = entities[i];
+        ent.z += spd * dt;
+
+        // Colisión cerca del jugador
+        if (!ent.resolved && ent.z >= playerZ - 0.06 && ent.z <= playerZ + 0.05) {
+          if (Math.abs(visualLane - ent.lane) < 0.42) {
+            if (ent.kind === 'clean') {
+              ent.resolved = true;
+              cleanCount++;
+              state.score += 50;
+              playSfx('coin');
+              showRunToast(`✅ +1 Limpio: ${ent.text}`, true);
+              updateGameHud();
+              if (cleanCount >= activeLevelData.goalClean) {
+                finishLevel(true);
+                return;
+              }
+            } else if (ent.kind === 'dirty') {
+              // Si está saltando alto, ¡lo esquiva por encima!
+              if (jumpY > 42) {
+                ent.resolved = true;
+                dodgedCount++;
+                state.score += 20;
+                showRunToast(`🦘 ¡Saltaste el error!`, true);
+                updateGameHud();
+              } else {
+                ent.resolved = true;
+                hearts--;
+                flashRed = 1;
+                playSfx('hit');
+                showRunToast(`💥 ¡Chocaste con ${ent.text}!`, false);
+                updateGameHud();
+                if (hearts <= 0) {
+                  finishLevel(false);
+                  return;
+                }
+              }
+            }
+          }
+        }
+
+        // Si pasó sin chocar y era dirty -> esquivado
+        if (!ent.resolved && ent.z > playerZ + 0.06) {
+          ent.resolved = true;
+          if (ent.kind === 'dirty') {
+            dodgedCount++;
+            state.score += 10;
+            updateGameHud();
+          }
+        }
+
+        if (ent.z > 1.15) {
+          entities.splice(i, 1);
+        }
+      }
+    }
+
+    function drawScene() {
+      const w = canvas.width;
+      const h = canvas.height;
+      const world = activeLevelData.world;
+
+      // Fondo del túnel
+      ctx.fillStyle = world.trackBg;
+      ctx.fillRect(0, 0, w, h);
+
+      // Resplandor en el horizonte
+      const grad = ctx.createRadialGradient(w / 2, h * 0.14, 10, w / 2, h * 0.14, w * 0.6);
+      grad.addColorStop(0, world.railColor + '55');
+      grad.addColorStop(1, 'transparent');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, w, h);
+
+      // Suelo trapezoidal de los 3 carriles
+      const topW = w * 0.24;
+      const botW = w * 0.92;
+      const hy = h * 0.14;
+      const by = h * 0.98;
+
+      ctx.fillStyle = '#0F172A';
+      ctx.beginPath();
+      ctx.moveTo(w / 2 - topW / 2, hy);
+      ctx.lineTo(w / 2 + topW / 2, hy);
+      ctx.lineTo(w / 2 + botW / 2, by);
+      ctx.lineTo(w / 2 - botW / 2, by);
+      ctx.closePath();
+      ctx.fill();
+
+      // Traviesas horizontales animadas (sensación de velocidad Subway Surfers)
+      ctx.strokeStyle = world.railColor + '33';
+      ctx.lineWidth = 2;
+      for (let i = 0; i < 12; i++) {
+        const z = ((i / 12) + trackOffset / 12) % 1;
+        const y = projectY(z, h);
+        const halfW = (topW / 2) + ((botW - topW) / 2) * Math.pow(z, 1.35);
+        ctx.beginPath();
+        ctx.moveTo(w / 2 - halfW, y);
+        ctx.lineTo(w / 2 + halfW, y);
+        ctx.stroke();
+      }
+
+      // Líneas de los 3 carriles (rieles neón)
+      [-1.5, -0.5, 0.5, 1.5].forEach((offset, idx) => {
+        ctx.strokeStyle = (idx === 0 || idx === 3) ? world.railColor : '#334155';
+        ctx.lineWidth = (idx === 0 || idx === 3) ? 4 : 2;
+        ctx.beginPath();
+        ctx.moveTo(w / 2 + offset * (w * 0.08), hy);
+        ctx.lineTo(w / 2 + offset * (w * 0.30), by);
+        ctx.stroke();
+      });
+
+      // Ordenar entidades de atrás hacia adelante (z menor a mayor)
+      const sorted = [...entities].sort((a, b) => a.z - b.z);
+      for (const ent of sorted) {
+        if (ent.resolved && ent.kind === 'clean') continue; // Ya recogido
+        const x = projectLaneX(ent.lane, ent.z, w);
+        const y = projectY(ent.z, h);
+        const scale = 0.25 + ent.z * 0.85;
+        const boxW = Math.min(130, w * 0.26) * scale;
+        const boxH = 44 * scale;
+
+        ctx.save();
+        ctx.translate(x, y - boxH / 2);
+
+        if (ent.kind === 'clean') {
+          // Ficha de Dato Limpio (Verde / Dorado brillante)
+          ctx.fillStyle = '#059669';
+          ctx.strokeStyle = '#34D399';
+          ctx.lineWidth = 2.5 * scale;
+          roundRect(ctx, -boxW / 2, -boxH / 2, boxW, boxH, 10 * scale, true, true);
+
+          ctx.fillStyle = '#FFFFFF';
+          ctx.font = `900 ${Math.max(8, Math.round(12 * scale))}px Inter, sans-serif`;
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(`✅ ${ent.text}`, 0, 0, boxW - 8);
+        } else {
+          // Obstáculo / Monstruo Sucio (Rojo / Coral amenazante)
+          ctx.fillStyle = '#9F1239';
+          ctx.strokeStyle = '#FB7185';
+          ctx.lineWidth = 2.5 * scale;
+          roundRect(ctx, -boxW / 2, -boxH / 2, boxW, boxH, 10 * scale, true, true);
+
+          ctx.fillStyle = '#FFF1F2';
+          ctx.font = `900 ${Math.max(8, Math.round(12 * scale))}px Inter, sans-serif`;
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(ent.text, 0, 0, boxW - 8);
+        }
+        ctx.restore();
+      }
+
+      // Dibujar al Jugador (Surfer en Hoverboard)
+      const px = projectLaneX(visualLane, 0.86, w);
+      const py = projectY(0.86, h) - jumpY * 0.65;
+
+      // Sombra en el carril
+      ctx.fillStyle = 'rgba(0,0,0,0.45)';
+      ctx.beginPath();
+      ctx.ellipse(px, projectY(0.86, h) + 4, 24, 8, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Hoverboard Neón
+      ctx.fillStyle = world.accent;
+      roundRect(ctx, px - 26, py - 8, 52, 12, 6, true, false);
+
+      // Personaje Detective Surfer
+      ctx.fillStyle = '#FACC15';
+      ctx.beginPath();
+      ctx.arc(px, py - 26, 15, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.font = '22px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('🕵️', px, py - 26);
+
+      // Flash rojo al recibir golpe
+      if (flashRed > 0) {
+        ctx.fillStyle = `rgba(225, 29, 72, ${flashRed * 0.35})`;
+        ctx.fillRect(0, 0, w, h);
+      }
+    }
+
+    function roundRect(ctx, x, y, width, height, radius, fill, stroke) {
+      ctx.beginPath();
+      ctx.moveTo(x + radius, y);
+      ctx.lineTo(x + width - radius, y);
+      ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+      ctx.lineTo(x + width, y + height - radius);
+      ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+      ctx.lineTo(x + radius, y + height);
+      ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+      ctx.lineTo(x, y + radius);
+      ctx.quadraticCurveTo(x, y, x + radius, y);
+      ctx.closePath();
+      if (fill) ctx.fill();
+      if (stroke) ctx.stroke();
+    }
+
+    function finishLevel(won) {
+      levelFinished = true;
+      cancelAnimationFrame(animId);
+
+      const modal = document.getElementById('modal-result');
+      const primaryBtn = document.getElementById('btn-res-primary');
+
+      document.getElementById('res-clean').textContent = cleanCount;
+      document.getElementById('res-dodged').textContent = dodgedCount;
+      document.getElementById('res-lesson-text').textContent = activeLevelData.lessonTip;
+
+      if (won) {
+        playSfx('win');
+        if (typeof confetti === 'function') confetti({ particleCount: 55, spread: 70, origin: { y: 0.7 } });
+        if (activeLevelData.level >= state.unlockedLevel && state.unlockedLevel < 400) {
+          state.unlockedLevel = activeLevelData.level + 1;
+        }
+        saveState();
+        document.getElementById('res-emoji').textContent = '🏆';
+        document.getElementById('res-title').textContent = `¡Nivel ${activeLevelData.level} Superado!`;
+        document.getElementById('res-msg').textContent = '¡Excelente trabajo de Detective! Limpiaste el pipeline sin ensuciar la IA.';
+        primaryBtn.textContent = activeLevelData.level < 400 ? `Siguiente: Nivel ${activeLevelData.level + 1} ➔` : '¡Completaste los 400 Niveles! 🎉';
+        primaryBtn.onclick = () => {
+          if (activeLevelData.level < 400) startRunnerLevel(activeLevelData.level + 1);
+          else goToLobby();
+        };
+      } else {
+        document.getElementById('res-emoji').textContent = '👾';
+        document.getElementById('res-title').textContent = '¡El Dataset se Contaminó!';
+        document.getElementById('res-msg').textContent = 'Chocaste demasiadas veces con datos basura (GIGO). ¡Inténtalo de nuevo!';
+        primaryBtn.textContent = `Reintentar Nivel ${activeLevelData.level} 🔄`;
+        primaryBtn.onclick = () => startRunnerLevel(activeLevelData.level);
+      }
+
+      updateGameHud();
+      modal.classList.remove('hidden');
+    }
+
+    /* ============================================================
+       5. RENDER DEL LOBBY Y SELECTOR DE 400 NIVELES
+       ============================================================ */
+    function renderLobby() {
+      document.getElementById('hdr-score').textContent = state.score;
+      document.getElementById('hdr-unlocked').textContent = `Nv. ${state.unlockedLevel}/400`;
+      document.getElementById('lbl-current-lvl').textContent = state.currentLevel;
+
+      const tabs = document.getElementById('worlds-tabs');
+      tabs.innerHTML = '';
+      WORLDS.forEach(w => {
+        const active = w.id === state.selectedWorld;
+        const btn = document.createElement('button');
+        btn.className = `py-1.5 px-1 rounded-xl text-[10px] sm:text-xs font-black border transition-all ${active ? 'bg-cyan-500 text-slate-950 border-cyan-300 shadow-lg' : 'bg-slate-800 text-slate-300 border-slate-700 hover:bg-slate-700'}`;
+        btn.textContent = `M${w.id}`;
+        btn.onclick = () => {
+          state.selectedWorld = w.id;
+          renderLobby();
+        };
+        tabs.appendChild(btn);
+      });
+
+      const world = WORLDS[state.selectedWorld - 1];
+      document.getElementById('w-title').textContent = `Mundo ${world.id}: ${world.name}`;
+      document.getElementById('w-desc').textContent = world.desc;
+      document.getElementById('w-range').textContent = world.range;
+      document.getElementById('hdr-world').textContent = `Mundo ${world.id} · ${world.name}`;
+
+      const grid = document.getElementById('levels-grid');
+      grid.innerHTML = '';
+      const startL = (world.id - 1) * 80 + 1;
+      const endL = world.id * 80;
+
+      for (let l = startL; l <= endL; l++) {
+        const btn = document.createElement('button');
+        const isCurrent = l === state.currentLevel;
+        const isPassed = l < state.unlockedLevel;
+        btn.textContent = l;
+        btn.className = `py-1.5 rounded-lg text-[11px] font-black border transition-transform hover:scale-105 ${
+          isCurrent ? 'bg-emerald-500 text-slate-950 border-emerald-300 ring-2 ring-emerald-400' :
+          isPassed ? 'bg-amber-400/20 text-amber-300 border-amber-400/40' :
+          'bg-slate-800/80 text-slate-200 border-slate-700 hover:border-cyan-400'
+        }`;
+        btn.onclick = () => startRunnerLevel(l);
+        grid.appendChild(btn);
+      }
+    }
+
+    function goToLobby() {
+      levelFinished = true;
+      if (animId) cancelAnimationFrame(animId);
+      document.getElementById('modal-result').classList.add('hidden');
+      document.getElementById('screen-game').classList.add('hidden');
+      document.getElementById('screen-lobby').classList.remove('hidden');
+      renderLobby();
+    }
+
+    /* ============================================================
+       6. INICIALIZACIÓN Y EVENTOS
+       ============================================================ */
+    document.addEventListener('DOMContentLoaded', () => {
+      loadState();
+      renderLobby();
+
+      document.getElementById('btn-play-current').onclick = () => startRunnerLevel(state.currentLevel);
+      document.getElementById('btn-back-lobby').onclick = goToLobby;
+      document.getElementById('btn-home').onclick = goToLobby;
+      document.getElementById('btn-res-map').onclick = goToLobby;
+
+      document.getElementById('btn-jump').onclick = () => {
+        const val = parseInt(document.getElementById('jump-input').value, 10);
+        if (val >= 1 && val <= 400) {
+          state.selectedWorld = Math.min(5, Math.floor((val - 1) / 80) + 1);
+          startRunnerLevel(val);
+        }
+      };
+
+      document.getElementById('ctrl-left').onclick = () => moveLane(-1);
+      document.getElementById('ctrl-right').onclick = () => moveLane(1);
+      document.getElementById('ctrl-jump').onclick = triggerJump;
+
+      document.getElementById('btn-sound').onclick = () => {
+        soundOn = !soundOn;
+        document.getElementById('btn-sound').textContent = soundOn ? '🔊' : '🔇';
+      };
+    });
+  </script>
+</body>
+</html>
